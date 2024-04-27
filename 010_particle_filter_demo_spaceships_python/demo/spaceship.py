@@ -1,6 +1,5 @@
 import cv2 as cv
 import numpy as np
-from world import World
 
 class SpaceshipPart:
   WIDTH = 20
@@ -19,7 +18,7 @@ class SpaceshipPart:
     cv.rectangle(img, np.array(top_left_corner), bottom_right_corner, color=(0, 255, 0), thickness=-1)
     cv.rectangle(img, top_left_corner, bottom_right_corner, color=(0, 178, 0), thickness=2)
   
-  def update(self, world: World, delta_t: float):
+  def update(self, world_size: tuple[int, int], delta_t: float):
     if np.random.uniform(low=0.0, high=100.0) <= 5.0:
       self.randomize_velocity()
 
@@ -28,7 +27,7 @@ class SpaceshipPart:
                 self.pos[1] + self.vel[1] * delta_t)
 
     # bounce of walls
-    new_pos = np.clip(self.pos, (0, 0), world.size)
+    new_pos = np.clip(self.pos, (0, 0), world_size)
     if self.pos[0] != new_pos[0]: self.vel = (self.vel[0] * -1, self.vel[1])
     if self.pos[1] != new_pos[1]: self.vel = (self.vel[0], self.vel[1] * -1)
 
@@ -51,9 +50,9 @@ class Spaceship:
       part = SpaceshipPart(part_pos, vel=(0, 0))
       self.parts.append(part)
   
-  def update(self, world: World, delta_t: float):
+  def update(self, world_size: tuple[int, int], delta_t: float):
     for part in self.parts:
-      part.update(world, delta_t)
+      part.update(world_size, delta_t)
 
   def draw(self, img: cv.Mat):
     for part in self.parts:
